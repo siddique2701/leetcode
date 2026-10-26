@@ -1,58 +1,36 @@
-class Solution {
 
-    private int[][] directions = {
-            {1, 0},
-            {-1, 0},
-            {0, 1},
-            {0, -1}
-    };
+class Solution {
+    private int rows, cols;
+    private int[][] memo;
+    private final int[][] DIRS = {{-1,0},{1,0},{0,-1},{0,1}};
 
     public int longestIncreasingPath(int[][] matrix) {
-
-        if (matrix == null || matrix.length == 0)
-            return 0;
-
-        int m = matrix.length;
-        int n = matrix[0].length;
-
-        int[][] dp = new int[m][n];
+        rows = matrix.length;
+        cols = matrix[0].length;
+        memo = new int[rows][cols];
 
         int answer = 0;
-
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                answer = Math.max(answer, dfs(matrix, dp, i, j));
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                answer = Math.max(answer, dfs(matrix, r, c));
             }
         }
-
         return answer;
     }
 
-    private int dfs(int[][] matrix, int[][] dp, int row, int col) {
+    private int dfs(int[][] matrix, int r, int c) {
+        if (memo[r][c] != 0) return memo[r][c];
 
-        if (dp[row][col] != 0)
-            return dp[row][col];
+        int maxLength = 1;
+        for (int[] d : DIRS) {
+            int nr = r + d[0], nc = c + d[1];
 
-        int max = 1;
-
-        for (int[] dir : directions) {
-
-            int newRow = row + dir[0];
-            int newCol = col + dir[1];
-
-            if (newRow >= 0 &&
-                newRow < matrix.length &&
-                newCol >= 0 &&
-                newCol < matrix[0].length &&
-                matrix[newRow][newCol] > matrix[row][col]) {
-
-                max = Math.max(max,
-                        1 + dfs(matrix, dp, newRow, newCol));
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols
+                    && matrix[nr][nc] > matrix[r][c]) {
+                maxLength = Math.max(maxLength, 1 + dfs(matrix, nr, nc));
             }
         }
 
-        dp[row][col] = max;
-
-        return max;
+        return memo[r][c] = maxLength;
     }
 }
