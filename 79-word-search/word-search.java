@@ -1,34 +1,47 @@
+
 class Solution {
     public boolean exist(char[][] board, String word) {
         int rows = board.length;
         int cols = board[0].length;
 
-        for(int i = 0; i< rows; i ++) {
-            for(int j=0; j < cols; j++) {
-                if(board[i][j] == word.charAt(0) && helper(board, word,i, j, 0)) {
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (dfs(board, word, r, c, 0)) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
-    private boolean helper(char[][] board,  String word, int i, int j, int count) {
-        if(count == word.length()) {
-            return true;
-        }
-        if(i < 0 || i>= board.length || j < 0 || j >= board[0].length || board[i][j] != word.charAt(count)) {
+    private boolean dfs(char[][] board, String word,
+                        int r, int c, int index) {
+        if (r < 0 || r >= board.length ||
+            c < 0 || c >= board[0].length) {
             return false;
         }
 
-        char temp = board[i][j];
-        board[i][j] = ' ';
-        boolean found = 
-            helper(board, word, i+1, j, count+1)
-            || helper(board, word, i-1, j, count+1)
-            || helper(board, word, i , j +1, count +1)
-            || helper(board, word, i, j-1, count+1);
-        board[i][j] = temp;
+        if (board[r][c] == '#' ||
+            board[r][c] != word.charAt(index)) {
+            return false;
+        }
+
+        if (index == word.length() - 1) {
+            return true;
+        }
+
+        char temp = board[r][c];
+        board[r][c] = '#';
+
+        boolean found =
+            dfs(board, word, r - 1, c, index + 1) ||
+            dfs(board, word, r + 1, c, index + 1) ||
+            dfs(board, word, r, c - 1, index + 1) ||
+            dfs(board, word, r, c + 1, index + 1);
+
+        board[r][c] = temp;
+
         return found;
     }
 }
